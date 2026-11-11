@@ -1,16 +1,30 @@
 # Superleague Football ⚽
 
-An interactive 3D arcade football (soccer) game built with **Three.js** and Web Audio API.
+Interactive 3D arcade football (soccer) game built with **Three.js** and Web Audio API.
 
-## 🎮 Play
+## 📂 Project Structure
 
-- **Offline / Standalone**: Open `game.html` directly in any modern web browser.
-- **Local Server**:
-  ```bash
-  npm install
-  npm start
-  ```
-  Visit [http://localhost:3000](http://localhost:3000) to play.
+- **[`legacy/`](./legacy/)**: Complete, fully playable 3D arcade football game (v1.0.0). Includes standalone HTML version (`game.html`), local HTTP server, and Playwright tests.
+- **[`superleague/`](./superleague/)**: Next-generation modularized engine & match architecture (v2.0.0), organizing ball physics, procedural kit generation, stadium rendering, match rules, AI, and animations into reusable engine and game modules.
+
+---
+
+## 🎮 Play the Game
+
+### Option 1: Standalone Offline
+Open [`legacy/game.html`](./legacy/game.html) directly in any modern web browser.
+
+### Option 2: Local Server
+```bash
+npm start
+```
+or:
+```bash
+node server.js
+```
+Then visit [http://localhost:3000](http://localhost:3000).
+
+---
 
 ## 🕹️ Controls
 
@@ -18,25 +32,11 @@ An interactive 3D arcade football (soccer) game built with **Three.js** and Web 
 - **Action / Pass / Shoot**: Action buttons on screen or keyboard action keys
 - **Pause / Menu**: Escape key or top-right UI button
 
-## 🛠️ Tech Stack & Architecture
+---
 
-- **Engine**: Three.js (WebGL 3D graphics)
-- **Audio & VFX**: Web Audio API procedural sound synthesis + custom particle effects
-- **Bundler**: `esbuild` for minification and bundling self-contained HTML
-- **Server**: Zero-dependency Node.js HTTP server (`server.js`)
+## 🛠️ Tech Stack
 
-## 📦 Building
-
-To recompile the bundle into `public/` and generate the standalone `game.html`:
-
-```bash
-npm run build
-```
-
-## 🧪 Testing
-
-Run automated smoke tests with Playwright:
-
-```bash
-npm test
-```
+- **Graphics**: Three.js (WebGL 3D graphics)
+- **Audio & VFX**: Procedural Web Audio API sound synthesis and custom particle systems
+- **Bundler**: `esbuild` for single-bundle export
+- **Server**: Lightweight zero-dependency Node.js HTTP server

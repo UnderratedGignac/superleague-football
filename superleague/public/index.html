@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<meta name="theme-color" content="#070b10"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="description" content="Superleague Football — realistic 3D football for your phone."/>
+<title>Superleague Football</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="grain"></div>
+
+<!-- ============================ ROTATE ============================ -->
+<div id="rotate" class="overlay hidden">
+  <div class="rotate-inner">
+    <svg viewBox="0 0 120 120" class="rot-icon" aria-hidden="true">
+      <rect x="38" y="18" width="44" height="84" rx="7" fill="none" stroke="#c6ff3d" stroke-width="3"/>
+      <rect x="46" y="28" width="28" height="60" rx="2" fill="#c6ff3d" opacity=".18"/>
+      <circle cx="60" cy="95" r="3" fill="#c6ff3d"/>
+      <path d="M96 52a38 38 0 0 1-14 30" fill="none" stroke="#22e0ff" stroke-width="3" stroke-linecap="round"/>
+      <path d="M96 44v10h-10" fill="none" stroke="#22e0ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <h2>ROTATE YOUR PHONE</h2>
+    <p>Superleague is played in landscape.</p>
+  </div>
+</div>
+
+<!-- ============================ LOADING ============================ -->
+<div id="loading" class="overlay">
+  <div class="load-inner">
+    <div class="brandmark">
+      <span class="b1">SUPER</span><span class="b2">LEAGUE</span>
+      <em>REAL FOOTBALL · 3D</em>
+    </div>
+    <div class="load-bar"><i id="loadFill"></i></div>
+    <div class="load-msg" id="loadMsg">Building the stadium…</div>
+  </div>
+</div>
+
+<!-- ============================ MENU ============================ -->
+<div id="menu" class="screen hidden">
+  <div class="menu-grid">
+    <section class="menu-left">
+      <div class="brandmark big">
+        <span class="b1">SUPER</span><span class="b2">LEAGUE</span>
+        <em>REAL FOOTBALL · 3D</em>
+      </div>
+      <div class="mode-list" id="modeList">
+        <button class="mode-btn sel" data-mode="quick">
+          <b>QUICK MATCH</b><small>One-off fixture · full 90 minutes</small>
+          <span class="mode-ic">▶</span>
+        </button>
+        <button class="mode-btn" data-mode="season">
+          <b>SUPERLEAGUE SEASON</b><small>8 clubs · 14 rounds · lift the trophy</small>
+          <span class="mode-ic">★</span>
+        </button>
+        <button class="mode-btn" data-mode="shootout">
+          <b>PENALTY SHOOTOUT</b><small>Five kicks · sudden death</small>
+          <span class="mode-ic">◎</span>
+        </button>
+      </div>
+      <div class="menu-foot">
+        <button class="ghost-btn" id="btnSettings">SETTINGS</button>
+        <button class="ghost-btn" id="btnHow">HOW TO PLAY</button>
+      </div>
+    </section>
+
+    <section class="menu-right">
+      <div class="panel">
+        <div class="panel-head"><h3>YOUR CLUB</h3><span id="selTeamMeta"></span></div>
+        <div class="team-grid" id="teamGrid"></div>
+      </div>
+      <div class="panel" id="oppPanel">
+        <div class="panel-head"><h3>OPPOSITION</h3></div>
+        <div class="chip-row" id="oppChips"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h3>STADIUM</h3></div>
+        <div class="chip-row" id="stadiumChips"></div>
+      </div>
+      <div class="panel-row">
+        <div class="panel half">
+          <div class="panel-head"><h3>DIFFICULTY</h3></div>
+          <div class="chip-row" id="diffChips"></div>
+        </div>
+        <div class="panel half">
+          <div class="panel-head"><h3>MATCH LENGTH</h3></div>
+          <div class="chip-row" id="lenChips"></div>
+        </div>
+      </div>
+      <div class="panel squad-panel">
+        <div class="panel-head"><h3>STARTING XI</h3><span id="squadMeta"></span></div>
+        <div class="squad-list" id="squadList"></div>
+      </div>
+      <button class="cta" id="btnPlay"><span>KICK OFF</span><i>›</i></button>
+    </section>
+  </div>
+</div>
+
+<!-- ============================ SEASON ============================ -->
+<div id="season" class="screen hidden">
+  <div class="season-wrap">
+    <header class="season-head">
+      <div>
+        <h2>SUPERLEAGUE <em id="seasonNo">SEASON 1</em></h2>
+        <p id="seasonSub">Round 1 of 14</p>
+      </div>
+      <button class="ghost-btn" id="seasonBack">BACK</button>
+    </header>
+    <div class="season-body">
+      <div class="panel table-panel">
+        <div class="panel-head"><h3>LEAGUE TABLE</h3></div>
+        <table class="league-table" id="leagueTable"></table>
+      </div>
+      <div class="season-side">
+        <div class="panel">
+          <div class="panel-head"><h3>NEXT FIXTURE</h3></div>
+          <div class="next-fixture" id="nextFixture"></div>
+          <button class="cta" id="btnPlayRound"><span>PLAY MATCH</span><i>›</i></button>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>YOUR RESULTS</h3></div>
+          <div class="form-row" id="formRow"></div>
+          <div class="season-stats" id="seasonStats"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h3>ROUND FIXTURES</h3></div>
+          <div class="fixtures" id="roundFixtures"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ HUD ============================ -->
+<div id="hud" class="hidden">
+  <div class="hud-top">
+    <div class="scorebug">
+      <div class="sb-team home"><i class="crest" id="sbCrestA"></i><span id="sbShortA">SOL</span></div>
+      <div class="sb-score"><span id="sbScoreA">0</span><em>–</em><span id="sbScoreB">0</span></div>
+      <div class="sb-team away"><span id="sbShortB">VLT</span><i class="crest" id="sbCrestB"></i></div>
+      <div class="sb-clock"><b id="sbClock">00:00</b><small id="sbHalf">1ST HALF</small></div>
+    </div>
+    <div class="top-right">
+      <button class="icon-btn" id="btnCam" title="Camera"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-2h6l2 2h3v11H4z" fill="none" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="13" r="3.4" fill="none" stroke="currentColor" stroke-width="1.7"/></svg><em id="camLabel">BROADCAST</em></button>
+      <button class="icon-btn" id="btnMute" title="Sound"><svg viewBox="0 0 24 24"><path d="M5 9v6h4l5 4V5L9 9z" fill="currentColor"/><path id="wave1" d="M16.5 9.2a4 4 0 0 1 0 5.6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path id="wave2" d="M19 6.8a7.5 7.5 0 0 1 0 10.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path id="muteX" d="M17 9l5 6M22 9l-5 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="display:none"/></svg></button>
+      <button class="icon-btn" id="btnFull" title="Fullscreen"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+      <button class="icon-btn" id="btnPause" title="Pause"><svg viewBox="0 0 24 24"><rect x="7" y="5" width="3.4" height="14" rx="1" fill="currentColor"/><rect x="13.6" y="5" width="3.4" height="14" rx="1" fill="currentColor"/></svg></button>
+    </div>
+  </div>
+
+  <div class="player-card" id="playerCard">
+    <div class="pc-num" id="pcNum">9</div>
+    <div class="pc-body">
+      <b id="pcName">A. Reyes</b>
+      <small id="pcRole">ST · Solar FC</small>
+      <div class="pc-bars"><i id="pcStam"></i></div>
+    </div>
+    <div class="pc-ovr" id="pcOvr">86</div>
+  </div>
+
+  <div class="ticker" id="ticker"><span id="tickerText"></span></div>
+
+  <div class="radar-wrap"><canvas id="radar" width="260" height="168"></canvas></div>
+
+  <div class="charge" id="chargeWrap"><i id="chargeFill"></i><small>POWER</small></div>
+
+  <div id="stickZone" class="stick-zone">
+    <div id="stickBase" class="stick-base"><div id="stickKnob" class="stick-knob"></div></div>
+  </div>
+
+  <div class="actions">
+    <button class="act b-skill" id="btnE"><span class="bl">SKILL</span></button>
+    <button class="act b-thru" id="btnC"><span class="bl">THRU</span></button>
+    <button class="act b-sprint" id="btnD"><span class="bl">SPRINT</span></button>
+    <button class="act b-pass" id="btnA"><span class="bl">PASS</span></button>
+    <button class="act b-shoot" id="btnB"><span class="bl">SHOOT</span></button>
+  </div>
+
+  <div class="setpiece-prompt hidden" id="spPrompt"><b id="spTitle">FREE KICK</b><small id="spHint">SHOOT or PASS</small><i id="spTimer"></i></div>
+  <div class="banner hidden" id="banner"><div class="banner-in"><em id="bannerKicker">GOAL</em><b id="bannerTitle">A. REYES</b><small id="bannerSub">SOLAR FC · 23'</small></div></div>
+  <div class="replay-tag hidden" id="replayTag"><i></i>REPLAY<button id="btnSkipReplay">SKIP ›</button></div>
+  <div class="fps hidden" id="fpsBox"></div>
+</div>
+
+<!-- ============================ PAUSE ============================ -->
+<div id="pause" class="screen modal hidden">
+  <div class="modal-card">
+    <h2>PAUSED</h2>
+    <div class="pause-grid">
+      <div class="pause-col">
+        <button class="cta" id="btnResume"><span>RESUME</span><i>›</i></button>
+        <button class="ghost-btn wide" id="btnRestart">RESTART MATCH</button>
+        <button class="ghost-btn wide" id="btnQuit">QUIT TO MENU</button>
+      </div>
+      <div class="pause-col">
+        <div class="opt"><label>CAMERA</label><div class="chip-row" id="camChips"></div></div>
+        <div class="opt"><label>GRAPHICS</label><div class="chip-row" id="qualChips"></div></div>
+        <div class="opt"><label>AUDIO</label><div class="chip-row" id="audioChips"></div></div>
+        <div class="opt"><label>REPLAYS</label><div class="chip-row" id="replayChips"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ SETTINGS ============================ -->
+<div id="settings" class="screen modal hidden">
+  <div class="modal-card">
+    <h2>SETTINGS</h2>
+    <div class="pause-grid">
+      <div class="pause-col">
+        <div class="opt"><label>GRAPHICS QUALITY</label><div class="chip-row" id="setQual"></div></div>
+        <div class="opt"><label>DEFAULT CAMERA</label><div class="chip-row" id="setCam"></div></div>
+        <div class="opt"><label>GOAL REPLAYS</label><div class="chip-row" id="setReplay"></div></div>
+      </div>
+      <div class="pause-col">
+        <div class="opt"><label>SOUND</label><div class="chip-row" id="setAudio"></div></div>
+        <div class="opt"><label>HAPTICS</label><div class="chip-row" id="setHaptics"></div></div>
+        <div class="opt"><label>PERFORMANCE METER</label><div class="chip-row" id="setFps"></div></div>
+        <p class="note">Quality auto-tunes resolution to hold a smooth frame rate. Pick <b>Low</b> on older phones.</p>
+      </div>
+    </div>
+    <button class="cta" id="setClose"><span>DONE</span><i>›</i></button>
+  </div>
+</div>
+
+<!-- ============================ HOW TO ============================ -->
+<div id="howto" class="screen modal hidden">
+  <div class="modal-card">
+    <h2>HOW TO PLAY</h2>
+    <div class="how-grid">
+      <div class="how-item"><b>MOVE</b><span>Drag anywhere on the left half — a stick appears under your thumb.</span><kbd>WASD</kbd></div>
+      <div class="how-item"><b>SPRINT</b><span>Hold to burn pace. Watch the stamina bar.</span><kbd>SHIFT</kbd></div>
+      <div class="how-item"><b>PASS</b><span>Aim with the stick, tap to find a team-mate.</span><kbd>J</kbd></div>
+      <div class="how-item"><b>THROUGH</b><span>Slide it into space behind the defence.</span><kbd>L</kbd></div>
+      <div class="how-item"><b>SHOOT</b><span>Hold to charge power, release to strike. Aim with the stick.</span><kbd>K</kbd></div>
+      <div class="how-item"><b>TACKLE / SLIDE</b><span>Out of possession the buttons switch. Reckless slides get booked.</span><kbd>SPACE</kbd></div>
+      <div class="how-item"><b>SWITCH</b><span>Change to the player nearest the ball.</span><kbd>Q</kbd></div>
+      <div class="how-item"><b>SKILL</b><span>Quick feint to beat your marker.</span><kbd>E</kbd></div>
+    </div>
+    <button class="cta" id="howClose"><span>GOT IT</span><i>›</i></button>
+  </div>
+</div>
+
+<!-- ============================ HALF / FULL TIME ============================ -->
+<div id="break" class="screen modal hidden">
+  <div class="modal-card wide">
+    <div class="break-head">
+      <h2 id="breakTitle">HALF TIME</h2>
+      <div class="break-score"><span id="breakTeamA">SOL</span><b id="breakScore">0 – 0</b><span id="breakTeamB">VLT</span></div>
+    </div>
+    <div class="break-body">
+      <div class="stats-col"><table class="stats-table" id="statsTable"></table></div>
+      <div class="subs-col">
+        <div class="panel-head"><h3>SUBSTITUTIONS</h3><span id="subsCount">0 / 5</span></div>
+        <div class="subs-grid"><div><h4>ON PITCH</h4><div id="subsOn" class="subs-list"></div></div><div><h4>BENCH</h4><div id="subsBench" class="subs-list"></div></div></div>
+        <p class="note" id="subsNote">Tap a player on the pitch, then a bench player.</p>
+      </div>
+    </div>
+    <div class="break-foot">
+      <div class="scorers" id="scorerList"></div>
+      <button class="cta" id="btnBreakGo"><span>SECOND HALF</span><i>›</i></button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ SHOOTOUT HUD ============================ -->
+<div id="soHud" class="hidden">
+  <div class="so-board">
+    <div class="so-row"><span id="soNameA">SOL</span><div id="soDotsA" class="so-dots"></div><b id="soScoreA">0</b></div>
+    <div class="so-row"><span id="soNameB">VLT</span><div id="soDotsB" class="so-dots"></div><b id="soScoreB">0</b></div>
+  </div>
+  <div class="so-round" id="soRound">ROUND 1 · YOUR KICK</div>
+</div>
+
+<div id="toast" class="toast"></div>
+<script type="module" src="game.js"></script>
+</body>
+</html>

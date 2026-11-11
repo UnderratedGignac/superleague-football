@@ -1,20 +1,11 @@
 {
-  "name": "superleague-football",
-  "version": "1.0.0",
+  "name": "superleague-football-monorepo",
+  "version": "2.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node build.mjs",
-    "start": "node server.js",
-    "test": "node tests/smoke.mjs"
-  },
-  "dependencies": {
-    "three": "^0.180.0",
-    "@fontsource/barlow-condensed": "^5.2.6",
-    "@fontsource/inter": "^5.2.6"
-  },
-  "devDependencies": {
-    "esbuild": "^0.25.0",
-    "playwright": "^1.55.0"
+    "start": "node legacy/server.js",
+    "start:legacy": "node legacy/server.js",
+    "test:legacy": "node legacy/tests/smoke.mjs"
   }
 }
