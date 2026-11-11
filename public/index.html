@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
+<meta name="theme-color" content="#060912"/>
+<title>SUPERLEAGUE — Football Beyond Human</title>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<div id="app">
+  <canvas id="game" tabindex="0"></canvas>
+  <div id="vignette"></div>
+
+  <header id="topbar">
+    <div class="brand">SUPER<span>LEAGUE</span><small>FOOTBALL BEYOND HUMAN</small></div>
+    <div id="scoreboard" class="hidden">
+      <div class="sb-team" id="sbHome"></div>
+      <div class="sb-score" id="sbScore">0 – 0</div>
+      <div class="sb-team" id="sbAway"></div>
+      <div class="sb-clock"><b id="sbClock">00:00</b><span id="sbHalf">1ST HALF</span></div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="soundBtn" title="Sound on/off (M)">🔊</button>
+      <button class="icon-btn" id="camBtn" title="Camera (C)">🎥</button>
+      <button class="icon-btn" id="fsBtn" title="Fullscreen">⛶</button>
+      <button class="icon-btn" id="pauseBtn" title="Pause / tactics (Esc)">⏸</button>
+    </div>
+  </header>
+
+  <div id="hud" class="hidden">
+    <div id="eventFeed"></div>
+    <div id="playerCard">
+      <div class="pc-top"><div class="pc-num" id="pcNum">9</div><div><div class="pc-name" id="pcName">—</div><div class="pc-role" id="pcRole">ST</div></div></div>
+      <div class="pc-power"><div class="pw-icon" id="pcPwIcon">☄</div><div><b id="pcPwName">Power</b><small id="pcPwState">READY</small></div></div>
+      <div class="bar-label"><span>POWER</span><span id="pcEnergyPct">100%</span></div>
+      <div class="bar energy"><i id="pcEnergy"></i></div>
+      <div class="bar-label"><span>STAMINA</span><span id="pcStamPct">100%</span></div>
+      <div class="bar stamina"><i id="pcStam"></i></div>
+      <div class="pc-hint"><kbd>SPACE</kbd> superpower · <kbd>K</kbd> hold to shoot</div>
+    </div>
+    <div id="minimap"><canvas id="minimapCanvas" width="190" height="120"></canvas></div>
+    <div id="controlsHint">
+      <span><kbd>WASD</kbd>move</span><span><kbd>SHIFT</kbd>sprint</span><span><kbd>J</kbd>pass</span><span><kbd>K</kbd>shoot</span><span><kbd>L</kbd>tackle</span><span><kbd>SPACE</kbd>power</span><span><kbd>Q</kbd>switch</span>
+    </div>
+    <div id="chargeBar"><i id="chargeFill"></i></div>
+    <div id="powerBanner"><b id="pbTitle"></b><span id="pbSub"></span></div>
+    <div id="centerState"><b id="csTitle"></b><span id="csSub"></span></div>
+    <div id="replayTag" class="hidden">● REPLAY</div>
+    <button id="skipBtn" class="hidden">SKIP ⏭</button>
+  </div>
+
+  <div id="mobileControls">
+    <div id="joystick"><div id="joystickKnob"></div></div>
+    <div id="actionButtons">
+      <button class="act pass" data-act="pass">PASS<small>J</small></button>
+      <button class="act shoot" data-act="shoot">SHOOT<small>hold K</small></button>
+      <button class="act power" data-act="power">POWER<small>SPACE</small></button>
+      <button class="act tackle" data-act="tackle">TACKLE<small>L</small></button>
+      <button class="act sprint" data-act="sprint">SPRINT<small>SHIFT</small></button>
+      <button class="act switch" data-act="switch">SWITCH<small>Q</small></button>
+    </div>
+  </div>
+
+  <!-- MENU -->
+  <div id="menu" class="overlay">
+    <div class="menu-wrap">
+      <div>
+        <div class="brand" style="font-size:30px">SUPER<span>LEAGUE</span><small>FOOTBALL BEYOND HUMAN</small></div>
+        <h1 class="hero-title">FOOTBALL.<br/><em>BEYOND HUMAN.</em></h1>
+        <p class="hero-sub">Five-a-side superhero football in cinematic 3D stadiums. Every player carries a signature superpower — meteor shots, flash steps, teleportation, seismic tackles and gravity wells. Score, foul, sub, celebrate. Win the league.</p>
+        <div class="setup">
+          <h3>YOUR TEAM</h3>
+          <div class="team-grid" id="teamGrid"></div>
+          <h3>OPPONENT</h3>
+          <select id="oppSelect"></select>
+          <h3>STADIUM</h3>
+          <div class="chips" id="stadiumChips"></div>
+          <h3>MATCH LENGTH</h3>
+          <div class="chips" id="durationChips"></div>
+          <h3>DIFFICULTY</h3>
+          <div class="chips" id="diffChips"></div>
+          <button class="kickoff-btn" id="kickoffBtn">KICK OFF ⚽</button>
+        </div>
+      </div>
+      <div class="roster" id="rosterPanel"></div>
+    </div>
+  </div>
+
+  <!-- PAUSE -->
+  <div id="pauseOverlay" class="overlay hidden">
+    <div class="panel">
+      <h2>PAUSED</h2><div class="sub">Tactics, substitutions and settings.</div>
+      <div class="tabs" id="pauseTabs">
+        <button class="tab sel" data-tab="resume">Resume</button>
+        <button class="tab" data-tab="subs">Substitutions</button>
+        <button class="tab" data-tab="controls">Controls</button>
+        <button class="tab" data-tab="settings">Settings</button>
+      </div>
+      <div id="pauseContent"></div>
+    </div>
+  </div>
+
+  <!-- HALFTIME -->
+  <div id="halfOverlay" class="overlay hidden">
+    <div class="panel">
+      <h2>HALF-TIME</h2><div class="sub" id="halfSub"></div>
+      <div id="halfStats"></div>
+      <div class="divider"></div>
+      <h3 style="font-size:11px;letter-spacing:.25em;color:var(--muted);margin-bottom:10px">MAKE CHANGES</h3>
+      <div id="halfSubs"></div>
+      <div class="btn-row"><button class="btn primary" id="secondHalfBtn">SECOND HALF ▶</button><button class="btn ghost" id="halfQuitBtn">Quit to menu</button></div>
+    </div>
+  </div>
+
+  <!-- FULLTIME -->
+  <div id="fullOverlay" class="overlay hidden">
+    <div class="panel">
+      <div class="winner" id="winnerText"></div>
+      <div class="final-score" id="finalScore"></div>
+      <div class="sub" style="text-align:center" id="fullSub"></div>
+      <div id="fullStats"></div>
+      <div class="btn-row" style="justify-content:center"><button class="btn primary" id="rematchBtn">REMATCH ↻</button><button class="btn" id="changeTeamsBtn">CHANGE TEAMS</button></div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+</div>
+<script type="module" src="game.js"></script>
+</body>
+</html>
